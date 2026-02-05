@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Director Dashboard - Timetable Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: url("backgrounds/background timetable.png") center/cover fixed no-repeat;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Main Container */
+        .dashboard-container {
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Blur Navigation */
+        .nav-blur {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: none;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: grid;
+            grid-template-areas:
+                "brand links user"
+                "controls controls controls";
+            grid-template-columns: auto 1fr auto;
+            row-gap: 20px;
+            align-items: center;
+        }
+
+        .nav-blur.hidden {
+            transform: translateY(-100%);
+        }
+
+        .nav-brand {
+            grid-area: brand;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-brand i {
+            font-size: 2rem;
+            color: #ffffff;
+        }
+
+        .nav-brand h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-links {
+            grid-area: links;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 10px 0;
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover {
+            color: #ffffff;
+        }
+
+        .nav-link.active {
+            color: #3b82f6;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #3b82f6;
+            border-radius: 1px;
+        }
+
+        .user-profile {
+            grid-area: user;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .user-name {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        /* Controls */
+        .nav-controls {
+            grid-area: controls;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 15px 0 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .controls-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .view-option {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .view-option.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-select {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: #ffffff;
+            cursor: pointer;
+            min-width: 180px;
+            transition: all 0.3s ease;
+        }
+
+        .control-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .control-select option {
+            background: #1a237e;
+            color: white;
+        }
+
+        .sort-button {
+            padding: 10px 25px;
+            background: rgba(59, 130, 246, 0.8);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sort-button:hover {
+            background: rgba(59, 130, 246, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .action-button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .action-button.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .action-button.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 180px 40px 100px;
+            max-height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Timetable Section */
+        .timetable-section {
+            margin-bottom: 50px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .teacher-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        .teacher-name {
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .teacher-subject {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Timetable Container */
+        .timetable-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .timetable {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .timetable th {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 15px;
+            font-weight: 600;
+            color: #ffffff;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .timetable th:first-child {
+            background: rgba(59, 130, 246, 0.8);
+            color: white;
+            font-weight: 600;
+            width: 80px;
+            position: sticky;
+            left: 0;
+            z-index: 20;
+        }
+
+        .timetable td {
+            padding: 20px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            vertical-align: middle;
+            height: 80px;
+            transition: all 0.3s ease;
+        }
+
+        .timetable td:first-child {
+            background: rgba(59, 130, 246, 0.8);
+            color: white;
+            font-weight: 600;
+            width: 80px;
+            position: sticky;
+            left: 0;
+            z-index: 15;
+        }
+
+        .timetable td:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .period-header {
+            font-weight: 600;
+            color: white;
+        }
+
+        .class-cell {
+            padding: 12px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .class-cell:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Subject colors */
+        .math { background: rgba(33, 150, 243, 0.8); }
+        .english { background: rgba(244, 67, 54, 0.8); }
+        .science { background: rgba(76, 175, 80, 0.8); }
+        .physics { background: rgba(156, 39, 176, 0.8); }
+        .chemistry { background: rgba(255, 152, 0, 0.8); }
+        .biology { background: rgba(0, 150, 136, 0.8); }
+        .computer { background: rgba(103, 58, 183, 0.8); }
+        .history { background: rgba(121, 85, 72, 0.8); }
+
+        /* Floating Add Button */
+        .add-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 25px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s ease;
+            z-index: 100;
+            border: none;
+        }
+
+        .add-button:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.6);
+        }
+
+        /* Settings Dropdown */
+        .settings-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            padding: 10px 0;
+            z-index: 1001;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-dropdown.active {
+            display: block;
+        }
+
+        .settings-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            border-radius: 0;
+            transition: all 0.3s ease;
+        }
+
+        .settings-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-option i {
+            color: #3b82f6;
+            width: 20px;
+        }
+
+        /* Break cell */
+        .break-cell {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+        }
+
+        /* Empty cell */
+        .empty-cell {
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .nav-blur {
+                padding: 15px 20px;
+                grid-template-areas:
+                    "brand user"
+                    "links links"
+                    "controls controls";
+                grid-template-columns: 1fr auto;
+                row-gap: 15px;
+            }
+
+            .nav-links {
+                order: 3;
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+
+            .nav-controls {
+                order: 4;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .controls-left, .controls-right {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .main-content {
+                padding: 200px 20px 80px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-link span {
+                display: none;
+            }
+
+            .nav-link i {
+                font-size: 1.2rem;
+            }
+
+            .control-select {
+                min-width: 140px;
+                padding: 8px 15px;
+            }
+
+            .action-button {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .teacher-info {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+           .timetable {                
+                min-width: 300px;
+            }
+           .timetable td {
+                padding: 5px 3px;                        
+                height: 20px;
+                min-width: 60px;
+            }
+            .timetable td div{
+                width: 97%;
+                height: 90%;
+            }
+        }
+
+        /* Scrollbar Styling */
+        .main-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .main-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .main-content::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 4px;
+        }
+
+        .main-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 130, 246, 0.8);
+        }
+
+        .timetable-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .timetable-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .timetable-container::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Blur Navigation -->
+        <nav class="nav-blur" id="mainNav">
+            <div class="nav-brand">
+                <i class="fas fa-user-tie"></i>
+                <h1>Director</h1>
+            </div>
+
+            <div class="nav-links">
+                <a href="user approval.html" class="nav-link">
+                    <i class="fas fa-user-check"></i>
+                    <span>User Approval</span>
+                </a>
+                <a href="#" class="nav-link active">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>School Timetable</span>
+                </a>
+                <a href="student oversite.html" class="nav-link">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Global Student</span>
+                </a>
+                <a href="news.html" class="nav-link">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>News</span>
+                </a>
+            </div>
+
+            <div class="user-profile" onclick="toggleSettings()">
+                <div class="user-avatar">D</div>
+                <div class="user-name">Director</div>
+                <i class="fas fa-cog"></i>
+                
+                <!-- Settings Dropdown -->
+                <div class="settings-dropdown" id="settingsDropdown">
+                    <a href="#" class="settings-option">
+                        <i class="fas fa-user-cog"></i>
+                        <span>Profile Settings</span>
+                    </a>
+                    <a href="#" class="settings-option">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifications</span>
+                    </a>
+                    <a href="#" class="settings-option">
+                        <i class="fas fa-lock"></i>
+                        <span>Privacy & Security</span>
+                    </a>
+                    <a href="#" class="settings-option">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-controls">
+                <div class="controls-left">
+                    <div class="view-toggle">
+                        <button class="view-option active" onclick="setView('student')">Student</button>
+                        <button class="view-option" onclick="setView('teacher')">Teacher</button>
+                    </div>
+                    
+                    <select class="control-select" id="gradeSelect">
+                        <option value="">Select Grade</option>
+                        <option value="10">Grade 10</option>
+                        <option value="11">Grade 11</option>
+                        <option value="12">Grade 12</option>
+                    </select>
+                    
+                    <select class="control-select" id="subjectSelect" style="display: none;">
+                        <option value="">Select Subject</option>
+                        <option value="math">Mathematics</option>
+                        <option value="english">English</option>
+                        <option value="science">Science</option>
+                        <option value="physics">Physics</option>
+                        <option value="chemistry">Chemistry</option>
+                        <option value="biology">Biology</option>
+                        <option value="computer">Computer Science</option>
+                    </select>
+                    
+                    <button class="sort-button" id="sortButton">
+                        <i class="fas fa-sort-amount-down"></i>
+                        <span id="sortText">Sort by Period</span>
+                    </button>
+                </div>
+                
+                <div class="controls-right">
+                    <button class="action-button secondary" onclick="printTimetable()">
+                        <i class="fas fa-print"></i>
+                        Print
+                    </button>
+                    <button class="action-button secondary" onclick="exportTimetable()">
+                        <i class="fas fa-file-export"></i>
+                        Export
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Timetable sections will be dynamically generated -->
+        </main>
+        
+        <!-- Floating Add Button -->
+        <button class="add-button" onclick="addNewSchedule()">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+
+    <script>
+        // Sample data with multiple teachers per subject
+        const timetableData = {
+            student: {
+                '10': {
+                    teachers: [
+                        {
+                            name: "Dr. Sarah Smith",
+                            subject: "Mathematics",
+                            timetable: {
+                                monday: ['Mathematics', 'English', 'Science', 'Break', 'History', 'Computer','Break', 'Physics','Chemistry'],
+                                tuesday: ['English', 'Mathematics', 'Chemistry', 'Break', 'Biology', 'Art','Break', 'Music'],
+                                wednesday: ['Physics', 'English', 'Break', 'Mathematics', 'Computer', 'History','Break', 'Science'],
+                                thursday: ['Chemistry', 'Science', 'Mathematics', 'Break', 'Computer', 'Physics','Break', 'Mathematics'],
+                                friday: ['Computer', 'Biology', 'Break', 'History', 'Art', 'Music', 'Break', 'Review']
+                            }
+                        }
+                    ]
+                },
+                '11': {
+                    teachers: [
+                        {
+                            name: "Prof. James Wilson",
+                            subject: "Physics",
+                            timetable: {
+                                monday: ['Physics', 'Mathematics', 'Chemistry', 'Break', 'Biology', 'Lab', 'Tutorial'],
+                                tuesday: ['Mathematics', 'Physics', 'Chemistry', 'Break', 'Lab', 'Tutorial', 'Review'],
+                                wednesday: ['Physics', 'Break', 'Mathematics', 'Chemistry', 'Biology', 'Lab', 'Tutorial'],
+                                thursday: ['Mathematics', 'Physics', 'Chemistry', 'Break', 'Biology', 'Lab', 'Review'],
+                                friday: ['Physics', 'Mathematics', 'Break', 'Chemistry', 'Lab', 'Tutorial', 'Exam Prep']
+                            }
+                        }
+                    ]
+                }
+            },
+            teacher: {
+                'math': [
+                    {
+                        name: "Dr. Sarah Smith",
+                        grade: "10A",
+                        timetable: {
+                            monday: ['10A', '11B', 'Break', '12C', 'Office', '10B', 'Meeting'],
+                            tuesday: ['11A', '12A', '10C', 'Break', '11C', 'Office', '12B'],
+                            wednesday: ['10A', 'Break', '12A', '11B', '10B', 'Office', 'Planning'],
+                            thursday: ['12C', '11A', '10C', 'Break', '11C', '12B', '10A'],
+                            friday: ['11B', 'Break', '10B', '12A', 'Office', 'Meeting', 'Training']
+                        }
+                    },
+                    {
+                        name: "Mr. Robert Chen",
+                        grade: "11A",
+                        timetable: {
+                            monday: ['11A', '12B', 'Break', '10C', 'Office', '11B', 'Tutorial'],
+                            tuesday: ['12A', '10A', 'Break', '11C', '10B', 'Office', 'Planning'],
+                            wednesday: ['11A', '12B', '10C', 'Break', '11C', 'Office', 'Meeting'],
+                            thursday: ['10A', '11B', 'Break', '12A', '10B', '12C', 'Review'],
+                            friday: ['12B', '10C', 'Break', '11C', 'Office', 'Meeting', 'Workshop']
+                        }
+                    }
+                ],
+                'english': [
+                    {
+                        name: "Ms. Emily Johnson",
+                        grade: "10B",
+                        timetable: {
+                            monday: ['10B', '11C', 'Break', '12A', 'Office', '10C', 'Meeting'],
+                            tuesday: ['11B', '12B', '10A', 'Break', '11A', 'Office', '12C'],
+                            wednesday: ['10B', 'Break', '12B', '11C', '10C', 'Office', 'Planning'],
+                            thursday: ['12A', '11B', '10A', 'Break', '11A', '12C', '10B'],
+                            friday: ['11C', 'Break', '10C', '12B', 'Office', 'Meeting', 'Training']
+                        }
+                    }
+                ]
+            }
+        };
+
+        const subjects = ['math', 'english', 'science', 'physics', 'chemistry', 'biology', 'computer', 'history'];
+        const periods = ['1', '2', 'Break', '3', '4', '5','Break', '6','7'];
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+        let currentView = 'student';
+        let lastScrollTop = 0;
+        let isNavVisible = true;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTimetables();
+            updateSortButton();
+            setupScrollListener();
+        });
+
+        function setView(view) {
+            currentView = view;
+            
+            // Update active button
+            document.querySelectorAll('.view-option').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show/hide selectors
+            const gradeSelect = document.getElementById('gradeSelect');
+            const subjectSelect = document.getElementById('subjectSelect');
+            
+            if (view === 'student') {
+                gradeSelect.style.display = 'block';
+                subjectSelect.style.display = 'none';
+                gradeSelect.value = '10';
+            } else {
+                gradeSelect.style.display = 'none';
+                subjectSelect.style.display = 'block';
+                subjectSelect.value = 'math';
+            }
+            
+            loadTimetables();
+            updateSortButton();
+        }
+
+        function loadTimetables() {
+            const mainContent = document.getElementById('mainContent');
+            mainContent.innerHTML = '';
+            
+            if (currentView === 'student') {
+                const grade = document.getElementById('gradeSelect').value || '10';
+                const gradeData = timetableData.student[grade];
+                
+                if (gradeData && gradeData.teachers) {
+                    gradeData.teachers.forEach(teacher => {
+                        const section = createTimetableSection(teacher);
+                        mainContent.appendChild(section);
+                    });
+                }
+            } else {
+                const subject = document.getElementById('subjectSelect').value || 'math';
+                const teachers = timetableData.teacher[subject] || [];
+                
+                teachers.forEach(teacher => {
+                    const section = createTimetableSection(teacher);
+                    mainContent.appendChild(section);
+                });
+            }
+        }
+
+        function createTimetableSection(teacher) {
+            const section = document.createElement('div');
+            section.className = 'timetable-section';
+            
+            const sectionHeader = document.createElement('div');
+            sectionHeader.className = 'section-header';
+            
+            const teacherInfo = document.createElement('div');
+            teacherInfo.className = 'teacher-info';
+            
+            sectionHeader.innerHTML = `
+                <div class="section-title">${currentView === 'student' ? teacher.subject + ' Timetable' : teacher.name + ' - Class ' + teacher.grade}</div>
+                <div class="teacher-info">
+                    <div>
+                        <div class="teacher-name">${teacher.name}</div>
+                        ${currentView === 'teacher' ? `<div class="teacher-subject">${teacher.grade}</div>` : ''}
+                    </div>
+                </div>
+            `;
+            
+            const timetableContainer = document.createElement('div');
+            timetableContainer.className = 'timetable-container';
+            
+            const table = document.createElement('table');
+            table.className = 'timetable';
+            
+            let html = '<thead><tr><th>Period</th>';
+            days.forEach(day => {
+                html += `<th>${day}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+            
+            for (let i = 0; i < periods.length; i++) {
+                html += `<tr><td class="period-header">${periods[i]}</td>`;
+                
+                days.forEach(day => {
+                    const dayKey = day.toLowerCase();
+                    let cellContent = teacher.timetable[dayKey]?.[i] || '';
+                    
+                    if (periods[i] === 'Break') {
+                        html += `<td class="break-cell">Break</td>`;
+                    } else if (cellContent) {
+                        const subjectClass = getSubjectClass(cellContent);
+                        html += `<td><div class="class-cell ${subjectClass}">${cellContent}</div></td>`;
+                    } else {
+                        html += `<td class="empty-cell"></td>`;
+                    }
+                });
+                
+                html += '</tr>';
+            }
+            
+            html += '</tbody>';
+            table.innerHTML = html;
+            
+            timetableContainer.appendChild(table);
+            section.appendChild(sectionHeader);
+            section.appendChild(timetableContainer);
+            
+            return section;
+        }
+
+        function getSubjectClass(content) {
+            if (content.includes('Math')) return 'math';
+            if (content.includes('English')) return 'english';
+            if (content.includes('Science')) return 'science';
+            if (content.includes('Physics')) return 'physics';
+            if (content.includes('Chemistry')) return 'chemistry';
+            if (content.includes('Biology')) return 'biology';
+            if (content.includes('Computer') || content.includes('Lab')) return 'computer';
+            if (content.includes('History')) return 'history';
+            if (content.includes('Art') || content.includes('Music')) return 'art';
+            return 'other';
+        }
+
+        function updateSortButton() {
+            const sortText = document.getElementById('sortText');
+            sortText.textContent = currentView === 'student' ? 'Sort by Teacher' : 'Sort by Class';
+        }
+
+        function toggleSettings() {
+            const dropdown = document.getElementById('settingsDropdown');
+            dropdown.style.background = "#24482ba0";
+            dropdown.classList.toggle('active');            
+        }
+
+        function setupScrollListener() {
+            const mainContent = document.getElementById('mainContent');
+            const mainNav = document.getElementById('mainNav');
+            
+            mainContent.addEventListener('scroll', () => {
+                const scrollTop = mainContent.scrollTop;
+                
+                if (scrollTop > lastScrollTop && scrollTop > 100) {
+                    if (isNavVisible) {
+                        mainNav.classList.add('hidden');
+                        isNavVisible = false;
+                    }
+                } else if (scrollTop < lastScrollTop) {
+                    if (!isNavVisible) {
+                        mainNav.classList.remove('hidden');
+                        isNavVisible = true;
+                        setTimeout(() => {
+                            mainNav.classList.add('hidden');
+                            isNavVisible = false;
+                        }, 2000);
+                    }
+                }
+                
+                lastScrollTop = scrollTop;
+            });
+        }
+
+        function addNewSchedule() {
+            alert('Add new schedule feature would open here.');
+        }
+
+        function printTimetable() {
+            window.print();
+        }
+
+        function exportTimetable() {
+            alert('Timetable exported successfully!');
+        }
+
+        // Event listeners
+        document.getElementById('gradeSelect').addEventListener('change', loadTimetables);
+        document.getElementById('subjectSelect').addEventListener('change', loadTimetables);
+        document.getElementById('sortButton').addEventListener('click', () => {
+            alert(`Sorting ${currentView === 'student' ? 'by teacher name' : 'by class'}...`);
+        });
+
+        // Close settings dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            const dropdown = document.getElementById('settingsDropdown');
+            const profile = document.querySelector('.user-profile');
+            
+            if (!profile.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

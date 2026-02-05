@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Welcome</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+body {
+  height: 100vh;
+   background-image:  linear-gradient(rgba(11,16,32,0.75), rgba(11,16,32,0.75)),
+    url("https://images.unsplash.com/photo-1523580846011-d3a5bc25702b");
+  
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e5e7eb;
+}
+
+/* AMBIENT LIGHT */
+.light {
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(125,211,252,0.22), transparent 65%);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  filter: blur(10px);
+}
+
+/* BORDER WRAPPER */
+.card-border {
+  --c1: rgb(0,183,255);
+  --c2: rgb(255,48,255);
+
+  position: relative;
+  padding: 12px;
+  border-radius: 32px;
+  overflow: hidden;
+  transition: filter 0.3s ease;
+}
+
+/* ROTATING STRIP */
+.card-border::before {
+  content: "";
+  position: absolute;
+  width: 200px;
+  height: 200%;
+  left: 80%;
+  top: 60%;
+  background: linear-gradient(
+    180deg,
+    var(--c1),
+    var(--c2)
+  );
+  transform: translate(-50%, -50%);
+  animation: spinBorder 8s linear infinite;
+  filter: blur(10px);
+  transition: background 0.4s ease;
+}
+
+/* GLASS CARD */
+.card {
+  position: relative;
+  padding: 70px 80px;
+  border-radius: 28px;
+  background: #07182e;
+  backdrop-filter: blur(22px);
+  text-align: center;
+  box-shadow: 0 60px 120px rgba(0,0,0,0.6);
+  transition: transform 0.6s ease;
+  z-index: 2;
+}
+
+/* 3D HOVER */
+
+
+
+/* TEXT */
+h1 {
+  font-size: 3.2rem;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #fff, #7dd3fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  max-width: 420px;
+  margin: 0 auto 35px;
+  line-height: 1.6;
+}
+
+h2 {
+  font-size: 2.2rem;
+  margin-bottom: 28px;
+  background: linear-gradient(90deg, #fff, #7dd3fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* BUTTONS */
+button {
+  padding: 16px 52px;
+  border-radius: 999px;
+  border: none;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  margin: 8px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.btn-t {
+  background: linear-gradient(135deg,#4facfe,#00f2fe);
+}
+.btn-s {
+  background: linear-gradient(135deg,#43e97b,#38f9d7);
+}
+.btn-p {
+  background: linear-gradient(135deg,#fa709a,#fee140);
+}
+
+button:hover {
+  transform: scale(1.15);
+  box-shadow: 0 20px 50px rgba(125,211,252,0.6);
+}
+
+/* ANIMATION */
+@keyframes spinBorder {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="light"></div>
+
+<div class="card-border" id="border">
+  <div class="card">
+    <h1>Welcome</h1>
+    <p>
+      Step into a smart classroom environment designed to connect
+      teachers, students, and parents in one seamless learning experience.
+    </p>
+
+    <h2>Who are you?</h2>
+    <button class="btn-t" data-c1="#4facfe" data-c2="#00f2fe">Director</button>
+    <button class="btn-t" data-c1="#4facfe" data-c2="#00f2fe">Teacher</button>
+    <button class="btn-s" data-c1="#43e97b" data-c2="#38f9d7">Student</button><br>
+    <button class="btn-p" data-c1="#fa709a" data-c2="#fee140">Parent</button>
+  </div>
+</div>
+
+<script>
+/* AMBIENT LIGHT */
+const light = document.querySelector('.light');
+window.addEventListener('mousemove', e => {
+  light.style.left = e.clientX + 'px';
+  light.style.top = e.clientY + 'px';
+});
+
+/* BORDER COLOR SYNC */
+const border = document.getElementById('border');
+document.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('mouseenter', () => {
+    border.style.setProperty('--c1', btn.dataset.c1);
+    border.style.setProperty('--c2', btn.dataset.c2);
+  });
+  btn.addEventListener('mouseleave', () => {
+    border.style.setProperty('--c1', 'rgb(0,183,255)');
+    border.style.setProperty('--c2', 'rgb(255,48,255)');
+  });
+});
+
+
+const buttons = document.querySelectorAll("button");
+buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+        window.location.href = "login.html";
+    })
+});
+</script>
+
+</body>
+</html>

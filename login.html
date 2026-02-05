@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Login - School Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 380px;
+         //   background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 2.8rem;
+            color: #4a6cf7;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            color: blue;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+            font-size: 1.1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 14px 14px 45px;
+            background: #f8f9fa;
+            border: 1px solid #e1e5eb;
+            border-radius: 10px;
+            color: #333;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #4a6cf7;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: #999;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #4a6cf7 0%, #3a56d4 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(135deg, #3a56d4 0%, #2a46c3 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 108, 247, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn i {
+            margin-right: 8px;
+        }
+
+        .demo-note {
+            margin-top: 20px;
+            padding: 12px;
+            background: #f0f5ff;
+            border-radius: 8px;
+            border-left: 4px solid #4a6cf7;
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .demo-note strong {
+            color: #4a6cf7;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: white;
+            font-size: 0.85rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: #fff;
+            border-radius: 10px;
+            border-left: 4px solid #4a6cf7;
+            color: #333;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
+            max-width: 350px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .notification.error {
+            border-left-color: #ff6b6b;
+            background: #fff5f5;
+        }
+
+        .notification.success {
+            border-left-color: #51cf66;
+            background: #f0fff4;
+        }
+
+        /* Compact form styling */
+        .login-container {
+            max-height: 500px;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 25px 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.6rem;
+            }
+        }
+        
+        
+    video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -1; /* Keep video behind everything */
+    }
+
+    </style>
+</head>
+<body>
+    <!-- Login Form Container -->
+    <div class="login-container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <h1>Teacher Login</h1>
+            <p>Access your teaching dashboard</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" class="form-control" placeholder="teacher@school.edu" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                    <button type="button" class="password-toggle" id="togglePassword">
+                        <i class="far fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+        </form>
+       
+
+        <div class="footer">
+            <p>School Management System &copy; 2023</p>
+            <p>Teacher Portal v2.1</p>
+        </div>
+    </div>
+
+  <!-- Video background -->
+  <video muted autoplay loop>
+    <source src="backgrounds/login4.mp4" type="video/mp4">
+    Your browser does not support HTML5 video.
+  </video>
+
+    <!-- Notification Element -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.querySelector("video");
+            if(window.innerWidth < 500) {
+                video.src = "backgrounds/login4 crop.mp4";
+            }
+       
+            // Password visibility toggle
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = togglePassword.querySelector('i');
+            
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Toggle eye icon
+                eyeIcon.classList.toggle('fa-eye');
+                eyeIcon.classList.toggle('fa-eye-slash');
+            });
+
+            // Form submission
+            const loginForm = document.getElementById('loginForm');
+            const notification = document.getElementById('notification');
+            
+            // Demo teacher account
+            const teacherEmail = 'teacher@school.edu';
+            const teacherPassword = 'teacher123';
+            
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value.trim();
+                
+                // Basic validation
+                if (!email || !password) {
+                    showNotification('Please enter both email and password', 'error');
+                    return;
+                }
+                
+                // Email format validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showNotification('Please enter a valid email address', 'error');
+                    return;
+                }
+                
+                // Check against demo credentials
+               //  if (email === teacherEmail && password === teacherPassword) {
+                    showNotification('Login successful! Redirecting to Teacher Dashboard...', 'success');
+                    
+                    // Simulate loading state on button
+                    const submitBtn = loginForm.querySelector('.login-btn');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+                    submitBtn.disabled = true;
+                    
+                    // Simulate redirect after a delay
+                    setTimeout(() => {
+                        // In a real system, this would redirect to the teacher dashboard
+                        showNotification('Welcome to Teacher Dashboard!', 'success');
+                        
+                        // Reset button
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        
+                        // Clear form (for demo purposes)
+                        loginForm.reset();
+                        passwordInput.setAttribute('type', 'password');
+                        eyeIcon.classList.remove('fa-eye-slash');
+                        eyeIcon.classList.add('fa-eye');
+                        window.location.href = "user approval.html"
+                    }, 1500);
+            /*    } else {
+                    showNotification('Invalid credentials. Use teacher@school.edu / teacher123', 'error');
+                } */
+            });
+            
+                        
+            
+            // Function to show notifications
+            function showNotification(message, type = 'info') {
+                notification.textContent = message;
+                notification.className = 'notification';
+                notification.classList.add(type);
+                notification.style.display = 'block';
+                
+                // Auto hide after 4 seconds
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 4000);
+            }
+            
+            // Auto-focus on email input
+            document.getElementById('email').focus();
+        });
+    </script>
+</body>
+</html>
