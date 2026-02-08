@@ -474,20 +474,15 @@
 
         /* Responsive Design */
         @media (max-width: 1024px) {
-            .nav-blur {
-                padding: 15px 20px;
-                grid-template-areas:
-                    "brand user"
-                    "links links"
-                    "controls controls";
-                grid-template-columns: 1fr auto;
-                row-gap: 15px;
-            }
 
-            .nav-links {
+ 
+        }
+
+        @media (max-width: 768px) {
+           .nav-links {
                 order: 3;
                 justify-content: space-between;
-                flex-wrap: wrap;
+                overflow: auto;
             }
 
             .nav-controls {
@@ -505,13 +500,15 @@
             .main-content {
                 padding: 200px 20px 80px;
             }
-        }
-
-        @media (max-width: 768px) {
-            .nav-link span {
-                display: none;
+            .nav-blur {
+                padding: 15px 20px;
+                grid-template-areas:
+                    "brand user"
+                    "links links"
+                    "controls controls";
+                grid-template-columns: 1fr auto;
+                row-gap: 15px;
             }
-
             .nav-link i {
                 font-size: 1.2rem;
             }
@@ -630,7 +627,7 @@
                         <i class="fas fa-lock"></i>
                         <span>Privacy & Security</span>
                     </a>
-                    <a href="#" class="settings-option">
+                    <a href="#" class="settings-option" onclick="logout()"> 
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
                     </a>
@@ -936,16 +933,18 @@
                     if (!isNavVisible) {
                         mainNav.classList.remove('hidden');
                         isNavVisible = true;
-                        setTimeout(() => {
-                            mainNav.classList.add('hidden');
-                            isNavVisible = false;
-                        }, 2000);
                     }
                 }
                 
                 lastScrollTop = scrollTop;
             });
         }
+
+        function logout() {
+            localStorage.setItem("isLogined", false);
+            localStorage.setItem("loginedAs", null);
+            window.location.href = "index.html";
+        }        
 
         function addNewSchedule() {
             alert('Add new schedule feature would open here.');
