@@ -188,10 +188,23 @@ document.querySelectorAll('button').forEach(btn => {
   });
 });
 
+if(localStorage.getItem("isLogined")) {
+    let role = localStorage.getItem("loginedAs");
+    	if (role === "student") {
+	    window.location.href = "student-dashboard.html";
+	} else if (role === "teacher") {
+	    window.location.href = "teacher period.html";
+	} else if (role === "parent") {
+	    window.location.href = "parent-dashboard.html";
+	} else if (role === "director") {
+	    window.location.href = "user approval.html";
+	}
+}
 
 const buttons = document.querySelectorAll("button");
 buttons.forEach(btn => {
     btn.addEventListener("click", () => {
+        sessionStorage.setItem("enter By", btn.textContent.toLowerCase());                
         window.location.href = "login.html";
     })
 });
