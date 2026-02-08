@@ -193,7 +193,7 @@
 
         .announcement-content {
             width: 90%;
-            max-width: 800px;
+            max-width: 500px;
             background: rgba(255, 255, 255, 0.05);
             border: none;
             border-radius: 20px;
@@ -452,6 +452,7 @@
         }
 
 
+
         /* Responsive Design */
         @media (max-width: 768px) {
         
@@ -659,7 +660,7 @@
                         <i class="fas fa-lock"></i>
                         <span>Privacy & Security</span>
                     </a>
-                    <a href="#" class="settings-option">
+                    <a href="#" class="settings-option" onclick="logout()">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
                     </a>
@@ -796,7 +797,12 @@
         const timeFilter = document.getElementById('timeFilter');
         const navLinks = document.querySelectorAll('.nav-link');
 
-
+        function logout() {
+            localStorage.setItem("isLogined", false);
+            localStorage.setItem("loginedAs", null);
+            window.location.href = "index.html";
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             if(window.innerWidth > 720) {
                 document.body.style.background = `url("backgrounds/News PC background.png")`;
@@ -1034,6 +1040,7 @@
                     if (!isNavVisible) {
                         mainNav.classList.remove('hidden');
                         isNavVisible = true;
+   
                     }
                 }
                 
