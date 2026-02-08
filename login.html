@@ -206,7 +206,41 @@
                 font-size: 1.6rem;
             }
         }
-        
+  .signup-wrapper {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.signup-wrapper a {
+    margin-left: 6px;
+    color: #4a6cf7;
+    font-weight: 600;
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+/* underline animation */
+.signup-wrapper a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 0;
+    height: 2px;
+    background: #4a6cf7;
+    transition: width 0.3s ease;
+}
+
+.signup-wrapper a:hover {
+    color: #6f8cff;
+}
+
+.signup-wrapper a:hover::after {
+    width: 100%;
+}      
         
     video {
       position: fixed;
@@ -225,7 +259,7 @@
     <div class="login-container">
         <div class="header">
             <div class="logo">
-                <i class="fas fa-chalkboard-teacher"></i>
+                <i class="fas fa-chalkboard-teacher" id="iconLogo"></i>
             </div>
             <h1>Teacher Login</h1>
             <p>Access your teaching dashboard</p>
@@ -235,7 +269,7 @@
             <div class="form-group">
                 <div class="input-group">
                     <i class="fas fa-envelope"></i>
-                    <input type="email" id="email" class="form-control" placeholder="teacher@school.edu" required>
+                    <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
                 </div>
             </div>
 
@@ -253,10 +287,14 @@
                 <i class="fas fa-sign-in-alt"></i> Sign In
             </button>
         </form>
+        
+        <div class="signup-wrapper" id="signupWrapper">
+            <span>Don’t have an account?</span>
+            <a href="#" id="signupLink">Sign up</a>
+        </div>
        
-
         <div class="footer">
-            <p>School Management System &copy; 2023</p>
+            <p>School Management System &copy; 2026</p>
             <p>Teacher Portal v2.1</p>
         </div>
     </div>
@@ -272,6 +310,51 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+          		const role = sessionStorage.getItem("enter By");
+				console.log(role);
+				const headerTitle = document.querySelector(".header h1");
+				const headerText  = document.querySelector(".header p");
+				const signupBox   = document.getElementById("signupWrapper");
+				const signupLink  = document.getElementById("signupLink");
+				
+				// Default safety
+				if (!role) {
+				    showNotification("Access role not defined", "error");
+				    return;
+				}
+				
+				switch (role) {
+				    case "student":
+				        headerTitle.textContent = "Student Login";
+				        headerText.textContent = "Access your student dashboard";
+				        signupLink.href = "student-signup.html";
+				        signupBox.style.display = "block";
+				        break;
+				
+				    case "teacher":
+				        headerTitle.textContent = "Teacher Login";
+				        headerText.textContent = "Access your teaching dashboard";
+				        signupLink.href = "teacher-signup.html";
+				        signupBox.style.display = "block";
+				        break;
+				
+				    case "parent":
+				        headerTitle.textContent = "Parent Login";
+				        headerText.textContent = "Monitor your child’s progress";
+				        signupLink.href = "parent-signup.html";
+				        signupBox.style.display = "block";
+				        break;
+				
+				    case "director":
+				        headerTitle.textContent = "Director Login";
+				        headerText.textContent = "Administrative control panel";
+				        signupBox.style.display = "none"; // ❌ no signup
+				        break;
+				
+				    default:
+				        showNotification("Invalid role detected", "error");
+				}
+				
             const video = document.querySelector("video");
             if(window.innerWidth < 500) {
                 video.src = "backgrounds/login4 crop.mp4";
@@ -342,7 +425,17 @@
                         passwordInput.setAttribute('type', 'password');
                         eyeIcon.classList.remove('fa-eye-slash');
                         eyeIcon.classList.add('fa-eye');
-                        window.location.href = "user approval.html"
+                        localStorage.setItem("isLogined", true);
+                        localStorage.setItem("loginedAs", role);
+											if (role === "student") {
+											    window.location.href = "student-dashboard.html";
+											} else if (role === "teacher") {
+											    window.location.href = "teacher period.html";
+											} else if (role === "parent") {
+											    window.location.href = "parent-dashboard.html";
+											} else if (role === "director") {
+											    window.location.href = "user approval.html";
+											}
                     }, 1500);
             /*    } else {
                     showNotification('Invalid credentials. Use teacher@school.edu / teacher123', 'error');
@@ -353,6 +446,7 @@
             
             // Function to show notifications
             function showNotification(message, type = 'info') {
+                const notification = document.getElementById('notification');
                 notification.textContent = message;
                 notification.className = 'notification';
                 notification.classList.add(type);
