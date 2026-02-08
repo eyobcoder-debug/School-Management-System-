@@ -110,8 +110,9 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            flex-wrap: wrap;
             gap: 5px;
+            overflow: auto;
+          
         }
 
         .nav-link {
@@ -341,42 +342,98 @@
             display: none;
         }
 
-        /* User Card */
-        .user-card {
-            flex: 0 0 calc(100vw - 100px);
-            max-width: 400px;
-            min-width: 300px;
-            scroll-snap-align: start;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            animation: fadeInUp 0.6s ease-out;
-        }
+/* User Card Container - Takes full viewport width */
+.user-card {
+    width: 100vw !important;
+    height: 100vh; /* Full viewport height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    scroll-snap-align: start; /* Snap to start of each card */
+    flex: 0 0 100vw; /* Don't grow, don't shrink, base 100vw */
+}
 
+/* Inner card - centered content */
+.user-card-in {
+    max-width: 500px !important;
+    min-width: 300px;
+    scroll-snap-align: start;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease-out;
+    width: 90% !important;
+}
+
+/* Update the horizontal container */
+.users-horizontal-container {
+    width: 100vw;
+    height: 100vh; /* Full viewport height */
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0;
+    margin: 0;
+    scroll-snap-type: x mandatory; /* Force snap scrolling */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    display: flex;
+    scroll-behavior: smooth;
+}
+
+/* Remove any margins from main content */
+.main-content {
+    padding: 0;
+    min-height: auto;
+    height: auto;
+}
+
+/* Update section title positioning */
+.section-title {
+    position: sticky;    
+    top: 120px;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: transparent;
+    text-align: center;
+    padding: 0 20px;
+    z-index: -1;
+}
+
+/* Move statistics to the right of cards */
+.statistics-section {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
         @media (min-width: 768px) {
-            .user-card {
+            .user-card-in {
                 flex: 0 0 350px;
             }
         }
 
-        .user-card:hover {
+        .user-card-in:hover {
             transform: translateY(-5px);
             background: rgba(255, 255, 255, 0.08);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
-        .user-card.pending {
+        .user-card-in.pending {
             border-left: 5px solid #f59e0b;
         }
 
-        .user-card.approved {
+        .user-card-in.approved {
             border-left: 5px solid #22c55e;
         }
 
-        .user-card.rejected {
+        .user-card-in.rejected {
             border-left: 5px solid #ef4444;
         }
 
@@ -612,6 +669,46 @@
             animation: slideIn 0.3s ease;
         }
 
+        .settings-dropdown {
+            display: none;
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            padding: 10px 0;
+            z-index: 1001;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-dropdown.active {
+            display: block;
+        }
+
+        .settings-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            border-radius: 0;
+            transition: all 0.3s ease;
+        }
+
+        .settings-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-option i {
+            color: #3b82f6;
+            width: 20px;
+        }
+        
         /* Animations */
         @keyframes fadeInUp {
             from {
@@ -637,12 +734,39 @@
 
         /* Responsive Adjustments */
         @media (max-width: 768px) {
+               
+         .settings-dropdown {
+            display: none;
+            position: absolute;
+            top: 35%;
+            right: 0;
+            width: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            padding: 10px 0;
+            z-index: 1001;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+          }
             .main-content {
                 padding: 200px 15px 30px;
             }
 
             .section-title h2 {
                 font-size: 1.8rem;
+            }
+            
+            .nav-blur {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+                grid-template-areas:
+                   "brand user"
+                   "links links"
+                   "actions actions";
+               grid-template-columns: 1fr auto;
             }
 
             .card-header {
@@ -681,6 +805,7 @@
         }
 
         @media (max-width: 480px) {
+            
             .stats-grid {
                 grid-template-columns: 1fr;
             }
@@ -693,24 +818,72 @@
                 font-size: 0.8rem;
             }
         }
+
+.nav-brand { grid-area: brand; }
+.nav-links-row { grid-area: links; }
+.nav-actions-row { grid-area: actions; }
+.user-profile { grid-area: user; }    
+
+@media (min-width: 769px) {
+    .nav-blur {
+        display: grid;
+        grid-template-areas:
+            "brand links user"
+            "actions actions actions";
+        grid-template-columns: auto 1fr auto;
+        row-gap: 20px;
+    }
+
+    .nav-links {
+        justify-content: center;
+    }
+
+    .nav-actions {
+        justify-content: center;
+    }
+
+    .filters {
+        display: flex;
+        gap: 20px;
+    }
+}        
     </style>
 </head>
 <body>
     <div class="dashboard-container">
         <!-- Blur Navigation with GRID Layout -->
         <nav class="nav-blur" id="mainNav">
-            <!-- Top Row: Brand + User Profile -->
-            <div class="nav-top-row">
+            <!-- Top Row: Brand + User Profile -->            
                 <div class="nav-brand">
                     <i class="fas fa-user-tie"></i>
                     <h1>Director</h1>
                 </div>
-                <div class="user-profile" onclick="toggleSettings()">
-                    <div class="user-avatar">D</div>
-                    <div class="user-name">Director</div>
-                    <i class="fas fa-cog" style="color: rgba(255,255,255,0.7); font-size: 0.9rem;"></i>
+            <div class="user-profile" onclick="toggleSettings()">
+                <div class="user-avatar">D</div>
+                <div class="user-name">Director</div>
+                <i class="fas fa-cog"></i>
+                
+                <!-- Settings Dropdown -->
+                <div class="settings-dropdown" id="settingsDropdown">
+                    <a href="#" class="settings-option">
+                        <i class="fas fa-user-cog"></i>
+                        <span>Profile Settings</span>
+                    </a>
+                    <a href="#" class="settings-option">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifications</span>
+                    </a>
+                    <a href="#" class="settings-option">
+                        <i class="fas fa-lock"></i>
+                        <span>Privacy & Security</span>
+                    </a>
+                    <a href="#" class="settings-option" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
                 </div>
             </div>
+            
 
             <!-- Middle Row: Navigation Links -->
             <div class="nav-links-row">
@@ -977,10 +1150,15 @@
                 return;
             }
 
-            filteredUsers.forEach((user, index) => {
-                const userCard = createUserCard(user, index);
-                usersContainer.appendChild(userCard);
-            });
+				    filteredUsers.forEach((user, index) => {
+				        const userCardContainer = document.createElement("div");
+				        userCardContainer.className = "user-card";
+				        userCardContainer.id = `user-card-${index}`;
+				        
+				        const userCardInner = createUserCard(user, index);
+				        userCardContainer.appendChild(userCardInner);
+				        usersContainer.appendChild(userCardContainer);
+				    });
 
             updateScrollIndicators();
         }
@@ -1013,7 +1191,7 @@
 
         function createUserCard(user, index) {
             const card = document.createElement('div');
-            card.className = `user-card ${user.status}`;
+            card.className = `user-card-in ${user.status}`;
             card.id = `user-card-${index}`;
             
             const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
@@ -1124,21 +1302,21 @@
             }
         }
 
-        function scrollToCard(index) {
-            if (filteredUsers.length === 0) return;
-            
-            const cardIndex = Math.min(index, filteredUsers.length - 1);
-            const card = document.getElementById(`user-card-${cardIndex}`);
-            if (card) {
-                card.scrollIntoView({
-                    behavior: 'smooth',
-                    inline: 'center',
-                    block: 'nearest'
-                });
-                currentCard = cardIndex;
-                updateScrollIndicators();
-            }
-        }
+			function scrollToCard(index) {
+			    if (filteredUsers.length === 0) return;
+			    
+			    const cardIndex = Math.min(index, filteredUsers.length - 1);
+			    const card = document.getElementById(`user-card-${cardIndex}`);
+			    if (card) {
+			        card.scrollIntoView({
+			            behavior: 'smooth',
+			            inline: 'start', // Changed to start to snap to beginning of viewport
+			            block: 'nearest'
+			        });
+			        currentCard = cardIndex;
+			        updateScrollIndicators();
+			    }
+			}
 
         function setupEventListeners() {
             // Filter and search changes
@@ -1169,7 +1347,7 @@
                 } else {
                     if (!isNavVisible) {
                         mainNav.classList.remove('hidden');
-                        isNavVisible = true;
+                        isNavVisible = true;                        
                     }
                 }
                 lastScrollTop = scrollTop;
@@ -1203,21 +1381,48 @@
 
         function setupHorizontalScroll() {
             // Update current card on scroll
-            usersContainer.addEventListener('scroll', () => {
-                const scrollLeft = usersContainer.scrollLeft;
-                const cardWidth = usersContainer.querySelector('.user-card')?.offsetWidth || 350;
-                const gap = 25;
-                const newCard = Math.round(scrollLeft / (cardWidth + gap));
-                
-                if (newCard !== currentCard) {
-                    currentCard = newCard;
-                    updateScrollIndicators();
-                }
-            });
+					usersContainer.addEventListener('scroll', () => {
+					    const index = Math.round(usersContainer.scrollLeft / window.innerWidth);
+					    if (index !== currentCard) {
+					        currentCard = index;
+					        updateScrollIndicators();
+					    }
+					});
 
             // Smooth scroll behavior
             usersContainer.style.scrollBehavior = 'smooth';
         }
+        
+        				let isScrolling = false;
+				
+				usersContainer.addEventListener('wheel', (e) => {
+				    alert("g")
+				    console.log('Scroll force (deltaY):', e.deltaY);
+				    const scrollPower = Math.abs(e.deltaY);
+				
+				    // Threshold: adjust if needed
+				    const FORCE_ONE_CARD_THRESHOLD = 160;
+				
+				    if (scrollPower < FORCE_ONE_CARD_THRESHOLD) {
+				        e.preventDefault();
+				
+				        if (isScrolling) return;
+				        isScrolling = true;
+				
+				        if (e.deltaY > 0) {
+				            // Scroll right (next card)
+				            scrollToCard(Math.min(currentCard + 1, filteredUsers.length - 1));
+				        } else {
+				            // Scroll left (previous card)
+				            scrollToCard(Math.max(currentCard - 1, 0));
+				        }
+				
+				        setTimeout(() => {
+				            isScrolling = false;
+				        }, 400); // lock time (prevents fast repeats)
+				    }
+				    // else: strong scroll → allow natural behavior
+				}, { passive: false });								
 
         function approveUser(userId) {
             const user = users.find(u => u.id === userId);
@@ -1226,6 +1431,7 @@
                 showNotification(`✅ ${user.name} has been approved`, 'success');
                 loadUsers();
                 updateStatistics();
+                scrollToCard(Math.min(currentCard, filteredUsers.length - 1));
             }
         }
 
@@ -1246,23 +1452,39 @@
             }
         }
 
-        function showNotification(message, type = 'info') {
-            notification.textContent = message;
-            notification.style.background = type === 'success' ? 'rgba(34, 197, 94, 0.2)' : 
-                                          type === 'error' ? 'rgba(239, 68, 68, 0.2)' : 
-                                          type === 'warning' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(59, 130, 246, 0.2)';
-            notification.style.borderColor = type === 'success' ? 'rgba(34, 197, 94, 0.3)' : 
-                                           type === 'error' ? 'rgba(239, 68, 68, 0.3)' : 
-                                           type === 'warning' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(59, 130, 246, 0.3)';
-            notification.style.color = type === 'success' ? '#22c55e' : 
-                                     type === 'error' ? '#ef4444' : 
-                                     type === 'warning' ? '#f59e0b' : '#3b82f6';
-            notification.style.display = 'block';
-            
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
-        }
+				function showNotification(message, type = 'info') {
+				    notification.textContent = message;
+				
+				    const styles = {
+				        success: {
+				            bg: 'rgba(34,197,94,0.2)',
+				            border: 'rgba(34,197,94,0.3)',
+				            color: '#22c55e'
+				        },
+				        error: {
+				            bg: 'rgba(239,68,68,0.2)',
+				            border: 'rgba(239,68,68,0.3)',
+				            color: '#ef4444'
+				        },
+				        info: {
+				            bg: 'rgba(59,130,246,0.2)',
+				            border: 'rgba(59,130,246,0.3)',
+				            color: '#3b82f6'
+				        }
+				    };
+				
+				    const s = styles[type] || styles.info;
+				
+				    notification.style.background = s.bg;
+				    notification.style.borderColor = s.border;
+				    notification.style.color = s.color;
+				
+				    notification.style.display = 'block';
+				
+				    setTimeout(() => {
+				        notification.style.display = 'none';
+				    }, 3000);
+				}
 
         function formatDate(dateString) {
             const date = new Date(dateString);
@@ -1272,9 +1494,17 @@
                 year: 'numeric'
             });
         }
+        
+        function logout() {
+            localStorage.setItem("isLogined", false);
+            localStorage.setItem("loginedAs", null);
+            window.location.href = "index.html";
+        }
 
         function toggleSettings() {
-            alert('Settings menu would open here');
+            const dropdown = document.getElementById('settingsDropdown');
+            dropdown.style.background = "#24482ba0";
+            dropdown.classList.toggle('active');
         }
     </script>
 </body>
