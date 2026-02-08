@@ -41,7 +41,7 @@
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border: none;
-            display: flex;
+            display: grid;
             justify-content: space-between;
             align-items: center;
         }
@@ -68,6 +68,7 @@
             display: flex;
             gap: 30px;
             align-items: center;
+            
         }
 
         .nav-link {
@@ -581,12 +582,21 @@
                 flex-direction: column;
                 gap: 15px;
             }
+            
+            .nav-blur {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+                grid-template-areas:
+                   "brand user"
+                   "links links";
+               grid-template-columns: 1fr auto;
+            }
 
             .nav-links {
                 width: 100%;
                 justify-content: space-between;
-                gap: 10px;
-                flex-wrap: wrap;
+                gap: 10px;                              
             }
 
             .nav-link {
@@ -639,6 +649,33 @@
         .form-container {
             animation: slideInUp 0.6s ease-out;
         }
+/* Grid areas */
+.nav-brand { grid-area: brand; }
+.nav-links { grid-area: links; }
+.user-profile { grid-area: user; }    
+
+@media (min-width: 769px) {
+    .nav-blur {
+        grid-template-areas:
+            "brand links user"
+            "actions actions actions";
+        grid-template-columns: auto 1fr auto;
+        row-gap: 20px;
+    }
+
+    .nav-links {
+        justify-content: center;
+    }
+
+    .nav-actions {
+        justify-content: center;
+    }
+
+    .filters {
+        display: flex;
+        gap: 20px;
+    }
+}        
     </style>
 </head>
 <body>
@@ -651,31 +688,30 @@
             </div>
 
             <div class="nav-links">
-                <a href="#" class="nav-link">
+                <a href="user approval.html" class="nav-link">
                     <i class="fas fa-user-check"></i>
                     User Approval
                 </a>
-                <a href="#" class="nav-link">
+                <a href="timetable.html" class="nav-link">
                     <i class="fas fa-calendar-alt"></i>
                     School Timetable
                 </a>
-                <a href="#" class="nav-link">
+                <a href="student oversite.html" class="nav-link">
                     <i class="fas fa-user-graduate"></i>
                     Global Student
                 </a>
-                <a href="#" class="nav-link active">
+                <a href="news.html" class="nav-link active">
                     <i class="fas fa-bullhorn"></i>
                     News
                 </a>
             </div>
-
-            <div class="nav-actions">
+            
                 <div class="user-profile" onclick="toggleSettings()">
                     <div class="user-avatar">D</div>
                     <div class="user-name">Director</div>
                     <i class="fas fa-cog" style="color: rgba(255,255,255,0.7);"></i>
-                </div>
-            </div>            
+                </div>            
+         
         </nav>
 
         <!-- Main Content -->
