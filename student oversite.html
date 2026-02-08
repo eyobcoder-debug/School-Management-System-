@@ -235,33 +235,37 @@
 
         /* Main Content */
         .main-content {
-            padding: 180px 40px 100px;
+            padding: 180px 0 100px;
             max-height: 100vh;
             overflow-y: auto;
             overflow-x: hidden;
         }
 
-        /* Cards View */
+        /* Cards View - MODIFIED FOR ONE-CARD PER SCROLL */
         .cards-container {
+            width: 100vw;
             padding: 20px 0;
             overflow-x: auto;
             overflow-y: hidden;
             display: flex;
-            gap: 25px;
+            gap: 0;
             scroll-snap-type: x mandatory;
             scrollbar-width: none;
             -ms-overflow-style: none;
             scroll-behavior: smooth;
             height: calc(100vh - 280px);
+            min-height: 500px;
         }
 
         .cards-container::-webkit-scrollbar {
             display: none;
         }
 
+        /* MODIFIED: Student Card - NOW FULL VIEWPORT SLIDES */
         .student-card {
-            flex: 0 0 350px;
-            height: 450px;
+            flex: 0 0 100vw;
+            height: 100%;
+            scroll-snap-align: start;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
@@ -270,14 +274,34 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            scroll-snap-align: start;
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
             cursor: pointer;
+            min-height: 500px;
+            max-width: 100vw;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        /* Center card content on desktop */
+        @media (min-width: 768px) {
+            .student-card {
+                flex: 0 0 100vw;
+                max-width: 600px;
+                margin: 0 auto;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            /* Add side padding to show next card peek */
+            .cards-container {
+                padding-left: calc(50vw - 300px);
+                padding-right: calc(50vw - 300px);
+            }
         }
 
         .student-card:hover {
-            transform: translateY(-10px);
+            transform: translateX(-50%) translateY(-10px);
             background: rgba(255, 255, 255, 0.08);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
         }
@@ -298,7 +322,7 @@
         }
 
         .student-name {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 600;
             margin-bottom: 10px;
             text-align: center;
@@ -306,21 +330,22 @@
 
         .student-grade {
             color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 25px;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
         }
 
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 20px;
             width: 100%;
             margin-top: 20px;
         }
 
         .stat-item {
             background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border-radius: 12px;
+            padding: 20px;
+            border-radius: 15px;
             text-align: center;
             transition: all 0.3s ease;
         }
@@ -330,13 +355,13 @@
         }
 
         .stat-label {
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .stat-value {
-            font-size: 1.8rem;
+            font-size: 2.2rem;
             font-weight: 700;
         }
 
@@ -582,6 +607,10 @@
             display: flex;
             gap: 10px;
             z-index: 100;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px 15px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
         }
 
         .scroll-indicator {
@@ -598,6 +627,7 @@
             width: 60px;
         }
 
+        /* Scroll Hint */
         .scroll-hint {
             position: fixed;
             bottom: 60px;
@@ -607,6 +637,10 @@
             font-size: 0.9rem;
             text-align: center;
             z-index: 100;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
         }
 
         /* Settings Dropdown */
@@ -650,58 +684,7 @@
             width: 20px;
         }
 
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .nav-blur {
-                padding: 15px 20px;
-                grid-template-areas:
-                    "brand user"
-                    "links links"
-                    "controls controls";
-                grid-template-columns: 1fr auto;
-                row-gap: 15px;
-            }
-
-            .nav-links {
-                order: 3;
-                justify-content: space-between;
-                flex-wrap: wrap;
-            }
-
-            .nav-controls {
-                order: 4;
-                flex-direction: column;
-                align-items: stretch;
-                gap: 15px;
-            }
-
-            .search-box {
-                min-width: auto;
-                width: 100%;
-            }
-
-            .main-content {
-                padding: 200px 20px 80px;
-            }
-
-            .student-card {
-                flex: 0 0 300px;
-                height: 400px;
-            }
-
-            .detail-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .detail-charts {
-                grid-template-columns: 1fr;
-            }
-        }
-
         @media (max-width: 768px) {
-            .nav-link span {
-                display: none;
-            }
 
             .nav-link i {
                 font-size: 1.2rem;
@@ -717,14 +700,80 @@
             }
 
             .student-card {
-                flex: 0 0 280px;
-                height: 380px;
+                border-radius: 15px;
+                margin: 0 10px;
+                min-height: 450px;
                 padding: 20px;
+            }
+
+            .student-name {
+                font-size: 1.5rem;
+            }
+
+            .student-grade {
+                font-size: 1rem;
+            }
+
+            .stat-item {
+                padding: 15px;
+            }
+
+            .stat-value {
+                font-size: 1.8rem;
             }
 
             .detail-header {
                 flex-direction: column;
                 text-align: center;
+            }
+            
+            .nav-blur {
+                padding: 15px 20px;
+                grid-template-areas:
+                    "brand user"
+                    "links links"
+                    "controls controls";
+                grid-template-columns: 1fr auto;
+                row-gap: 15px;
+            }
+
+            .nav-links {
+                order: 3;
+                justify-content: space-between;
+                overflow: auto;
+            }
+
+            .nav-controls {
+                order: 4;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .search-box {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .main-content {
+                padding: 200px 0 80px;
+            }
+
+            .detail-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .detail-charts {
+                grid-template-columns: 1fr;
+            }
+            
+            .scroll-hint {
+                bottom: 80px;
+                font-size: 0.8rem;
+            }
+            
+            .scroll-indicators {
+                bottom: 40px;
             }
         }
 
@@ -744,19 +793,6 @@
 
         .main-content::-webkit-scrollbar-thumb:hover {
             background: rgba(59, 130, 246, 0.8);
-        }
-
-        .cards-container::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .cards-container::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .cards-container::-webkit-scrollbar-thumb {
-            background: rgba(59, 130, 246, 0.5);
-            border-radius: 3px;
         }
 
         /* Animations */
@@ -817,7 +853,7 @@
                         <i class="fas fa-lock"></i>
                         <span>Privacy & Security</span>
                     </a>
-                    <a href="#" class="settings-option">
+                    <a href="#" class="settings-option" onclick="logout()">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
                     </a>
@@ -912,7 +948,7 @@
             <!-- Indicators will be dynamically generated -->
         </div>
 
-        <div class="scroll-hint" id="scrollHint">← Scroll horizontally →</div>
+        <div class="scroll-hint" id="scrollHint">← Swipe or scroll horizontally →</div>
     </div>
 
     <script>
@@ -1073,12 +1109,14 @@
         let isNavVisible = true;
         let currentCardIndex = 0;
         let sortOrder = 'best'; // 'best' or 'weak'
+        let filteredStudents = [];
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadStudents();
             setupEventListeners();
             setupScrollListener();
+            setupHorizontalScroll();
         });
 
         function setDisplay(display) {
@@ -1096,6 +1134,10 @@
                 tableContainer.style.display = 'none';
                 scrollHint.style.display = 'block';
                 scrollIndicators.style.display = 'flex';
+                // Reset to first card when switching to cards view
+                setTimeout(() => {
+                    scrollToCard(0);
+                }, 100);
             } else {
                 cardsContainer.style.display = 'none';
                 tableContainer.style.display = 'block';
@@ -1107,7 +1149,7 @@
         }
 
         function loadStudents() {
-            const filteredStudents = filterAndSortStudents();
+            filteredStudents = filterAndSortStudents();
             
             if (currentDisplay === 'cards') {
                 loadCards(filteredStudents);
@@ -1166,10 +1208,35 @@
             cardsContainer.innerHTML = '';
             scrollIndicators.innerHTML = '';
             
+            if (students.length === 0) {
+                const emptySlide = document.createElement('div');
+                emptySlide.className = 'student-card';
+                emptySlide.innerHTML = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 40px;">
+                        <div style="font-size: 4rem; margin-bottom: 20px; opacity: 0.5;">
+                            <i class="fas fa-user-slash"></i>
+                        </div>
+                        <h3 style="font-size: 1.8rem; margin-bottom: 15px;">No Students Found</h3>
+                        <p style="color: rgba(255,255,255,0.7); font-size: 1.1rem; margin-bottom: 30px;">
+                            Try adjusting your search or filter criteria
+                        </p>
+                        <button onclick="resetFilters()" style="padding: 12px 24px; background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 10px; cursor: pointer; font-weight: 600;">
+                            Reset All Filters
+                        </button>
+                    </div>
+                `;
+                cardsContainer.appendChild(emptySlide);
+                updateScrollIndicators();
+                return;
+            }
+
             students.forEach((student, index) => {
-                const card = createStudentCard(student);
-                card.addEventListener('click', () => showDetail(student));
-                cardsContainer.appendChild(card);
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'student-card';
+                cardDiv.id = `student-card-${index}`;
+                cardDiv.innerHTML = createStudentCardHTML(student);
+                cardDiv.addEventListener('click', () => showDetail(student));
+                cardsContainer.appendChild(cardDiv);
                 
                 const indicator = document.createElement('div');
                 indicator.className = `scroll-indicator ${index === currentCardIndex ? 'active' : ''}`;
@@ -1179,21 +1246,10 @@
                 scrollIndicators.appendChild(indicator);
             });
             
-            if (students.length === 0) {
-                const emptyCard = document.createElement('div');
-                emptyCard.className = 'student-card';
-                emptyCard.innerHTML = `
-                    <div style="text-align: center; padding: 40px;">
-                        <i class="fas fa-user-slash" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;"></i>
-                        <h3>No Students Found</h3>
-                        <p style="color: rgba(255,255,255,0.6); margin-top: 10px;">Try adjusting your filters</p>
-                    </div>
-                `;
-                cardsContainer.appendChild(emptyCard);
-            }
+            updateScrollIndicators();
         }
 
-        function createStudentCard(student) {
+        function createStudentCardHTML(student) {
             const fullName = `${student.firstName} ${student.lastName}`;
             const initials = `${student.firstName[0]}${student.lastName[0]}`;
             
@@ -1203,28 +1259,26 @@
             const mistakesClass = getMistakesClass(student.mistakes);
             
             return `
-                <div class="student-card" data-id="${student.id}">
-                    <div class="student-avatar">${initials}</div>
-                    <div class="student-name">${fullName}</div>
-                    <div class="student-grade">Grade ${student.grade} - Section ${student.section}</div>
-                    
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-label">Average</div>
-                            <div class="stat-value ${averageClass}">${student.average}%</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Attendance</div>
-                            <div class="stat-value ${attendanceClass}">${student.attendance}%</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Behavior</div>
-                            <div class="stat-value ${behaviorClass}">${student.behavior}</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Mistakes</div>
-                            <div class="stat-value ${mistakesClass}">${student.mistakes}</div>
-                        </div>
+                <div class="student-avatar">${initials}</div>
+                <div class="student-name">${fullName}</div>
+                <div class="student-grade">Grade ${student.grade} - Section ${student.section}</div>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Average</div>
+                        <div class="stat-value ${averageClass}">${student.average}%</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Attendance</div>
+                        <div class="stat-value ${attendanceClass}">${student.attendance}%</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Behavior</div>
+                        <div class="stat-value ${behaviorClass}">${student.behavior}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Mistakes</div>
+                        <div class="stat-value ${mistakesClass}">${student.mistakes}</div>
                     </div>
                 </div>
             `;
@@ -1232,11 +1286,6 @@
 
         function loadTable(students) {
             tableBody.innerHTML = '';
-            
-            students.forEach(student => {
-                const row = createTableRow(student);
-                tableBody.appendChild(row);
-            });
             
             if (students.length === 0) {
                 const row = document.createElement('tr');
@@ -1248,7 +1297,13 @@
                     </td>
                 `;
                 tableBody.appendChild(row);
+                return;
             }
+
+            students.forEach(student => {
+                const row = createTableRow(student);
+                tableBody.appendChild(row);
+            });
         }
 
         function createTableRow(student) {
@@ -1432,13 +1487,19 @@
         }
 
         function scrollToCard(index) {
-            const cards = document.querySelectorAll('.student-card');
-            if (cards[index]) {
-                cards[index].scrollIntoView({
+            if (filteredStudents.length === 0) return;
+            
+            const cardIndex = Math.min(index, filteredStudents.length - 1);
+            const container = document.getElementById('cardsContainer');
+            const card = document.getElementById(`student-card-${cardIndex}`);
+            
+            if (card) {
+                card.scrollIntoView({
                     behavior: 'smooth',
-                    inline: 'center'
+                    inline: 'center',
+                    block: 'nearest'
                 });
-                currentCardIndex = index;
+                currentCardIndex = cardIndex;
                 updateScrollIndicators();
             }
         }
@@ -1467,18 +1528,6 @@
                 loadStudents();
             });
             
-            // Card scrolling
-            cardsContainer.addEventListener('scroll', () => {
-                const scrollLeft = cardsContainer.scrollLeft;
-                const cardWidth = 350 + 25; // card width + gap
-                const newIndex = Math.round(scrollLeft / cardWidth);
-                
-                if (newIndex !== currentCardIndex) {
-                    currentCardIndex = newIndex;
-                    updateScrollIndicators();
-                }
-            });
-            
             // Settings dropdown
             const settingsDropdown = document.getElementById('settingsDropdown');
             document.addEventListener('click', (event) => {
@@ -1489,9 +1538,74 @@
             });
         }
 
+       function logout() {
+            localStorage.setItem("isLogined", false);
+            localStorage.setItem("loginedAs", null);
+            window.location.href = "index.html";
+        }
+
+        function setupHorizontalScroll() {
+            const container = document.getElementById('cardsContainer');
+            
+            // Enable snap scrolling
+            container.style.scrollSnapType = 'x mandatory';
+            
+            // Update current card on scroll end
+            container.addEventListener('scrollend', () => {
+                const scrollLeft = container.scrollLeft;
+                const cardWidth = container.querySelector('.student-card')?.offsetWidth || window.innerWidth;
+                const newCard = Math.round(scrollLeft / cardWidth);
+                
+                if (newCard !== currentCardIndex) {
+                    currentCardIndex = newCard;
+                    updateScrollIndicators();
+                }
+            });
+
+            // Mouse wheel for horizontal scrolling
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                container.scrollLeft += e.deltaY;
+            });
+
+            // Touch events for mobile
+            let touchStartX = 0;
+            container.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+            });
+            
+            container.addEventListener('touchend', (e) => {
+                const touchEndX = e.changedTouches[0].clientX;
+                const diff = touchStartX - touchEndX;
+                
+                // If swipe is significant enough
+                if (Math.abs(diff) > 50) {
+                    if (diff > 0) {
+                        // Swipe left - next card
+                        scrollToCard(Math.min(filteredStudents.length - 1, currentCardIndex + 1));
+                    } else {
+                        // Swipe right - previous card
+                        scrollToCard(Math.max(0, currentCardIndex - 1));
+                    }
+                }
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    scrollToCard(Math.max(0, currentCardIndex - 1));
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    scrollToCard(Math.min(filteredStudents.length - 1, currentCardIndex + 1));
+                }
+            });
+        }
+
         function setupScrollListener() {
             mainContent.addEventListener('scroll', () => {
                 const scrollTop = mainContent.scrollTop;
+                const scrollLeft = mainContent.scrollLeft;
                 
                 if (scrollTop > lastScrollTop && scrollTop > 100) {
                     if (isNavVisible) {
@@ -1502,6 +1616,10 @@
                     if (!isNavVisible) {
                         mainNav.classList.remove('hidden');
                         isNavVisible = true;
+                        setTimeout(() => {
+                            mainNav.classList.add('hidden');
+                            isNavVisible = false;
+                        }, 2000);
                     }
                 }
                 
@@ -1515,12 +1633,27 @@
             dropdown.classList.toggle('active');
         }
 
+        function resetFilters() {
+            gradeFilter.value = 'all';
+            sectionFilter.value = 'all';
+            behaviorFilter.value = 'all';
+            searchBox.value = '';
+            loadStudents();
+        }
+
         // Close detail view on ESC key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeDetail();
             }
         });
+
+        // Auto-hide scroll hint
+        setTimeout(() => {
+            if (scrollHint) {
+                scrollHint.style.opacity = '0.5';
+            }
+        }, 5000);
     </script>
 </body>
 </html>
