@@ -191,11 +191,11 @@ document.querySelectorAll('button').forEach(btn => {
 if(localStorage.getItem("isLogined")) {
     let role = localStorage.getItem("loginedAs");
     	if (role === "student") {
-	    window.location.href = "student-dashboard.html";
+	    window.location.href = "schedule for student.html";
 	} else if (role === "teacher") {
 	    window.location.href = "teacher period.html";
 	} else if (role === "parent") {
-	    window.location.href = "parent-dashboard.html";
+	    window.location.href = "student monitoring.html";
 	} else if (role === "director") {
 	    window.location.href = "user approval.html";
 	}
