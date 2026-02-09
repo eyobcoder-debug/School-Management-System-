@@ -337,13 +337,80 @@
             font-style: italic;
             background: rgba(255, 255, 255, 0.03);
         }
+        
+        .settings-dropdown {
+            display: block;
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            padding: 10px 0;
+            z-index: 1001;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-dropdown.active {
+            display: block;
+        }
+
+        .settings-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            border-radius: 0;
+            transition: all 0.3s ease;
+        }
+
+        .settings-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-option i {
+            color: #3b82f6;
+            width: 20px;
+        }
 
         /* Responsive Design */
         @media (max-width: 768px) {
+                           
+         .settings-dropdown {
+            display: none;
+            position: absolute;
+            top: 35%;
+            right: 0;
+            width: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            padding: 10px 0;
+            z-index: 1001;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+          }
             .main-content {
                 padding: 200px 10px 30px;
             }
-
+            
+            .nav-blur {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+                grid-template-areas:
+                   "brand user"
+                   "links links"
+                   "actions actions";
+               grid-template-columns: 1fr auto;
+            }
+            
             .schedule-title h2 {
                 font-size: 1.5rem;
             }
@@ -439,6 +506,36 @@
         .schedule-table-container::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.3);
         }
+
+.nav-brand { grid-area: brand; }
+.nav-links-row { grid-area: links; }
+.nav-actions-row { grid-area: actions; }
+.user-profile { grid-area: user; }    
+
+@media (min-width: 760px) {
+    .nav-blur {
+        display: grid;
+        grid-template-areas:
+            "brand links user"
+            "actions actions actions";
+        grid-template-columns: auto 1fr auto;
+        row-gap: 20px;
+    }
+
+    .nav-links {
+        justify-content: center;
+    }
+
+    .nav-actions {
+        justify-content: center;
+    }
+
+    .filters {
+        display: flex;
+        gap: 20px;
+    }
+}                
+        
     </style>
 </head>
 <body>
@@ -446,29 +543,47 @@
         <!-- Blur Navigation with GRID Layout -->
         <nav class="nav-blur" id="mainNav">
             <!-- Top Row: Brand + User Profile -->
-            <div class="nav-top-row">
                 <div class="nav-brand">
                     <i class="fas fa-chalkboard-teacher"></i>
                     <h1>Teacher</h1>
                 </div>
-                <div class="user-profile" onclick="toggleSettings()">
-                    <div class="user-avatar">TM</div>
-                    <div class="user-name">Teacher</div>
-                    <i class="fas fa-cog" style="color: rgba(255,255,255,0.7); font-size: 0.9rem;"></i>
+            <div class="user-profile" onclick="toggleSettings()">
+                <div class="user-avatar">T</div>
+                <div class="user-name">Teacher</div>
+                <i class="fas fa-cog"></i>
+                
+                <!-- Settings Dropdown -->
+                <div class="settings-dropdown" id="settingsDropdown">
+                    <a href="#" class="settings-option">
+                        <i class="fas fa-user-cog"></i>
+                        <span>Profile Settings</span>
+                    </a>
+                    <a href="#" class="settings-option">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifications</span>
+                    </a>
+                    <a href="#" class="settings-option">
+                        <i class="fas fa-lock"></i>
+                        <span>Privacy & Security</span>
+                    </a>
+                    <a href="#" class="settings-option" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
                 </div>
             </div>
 
             <!-- Middle Row: Navigation Links -->
-            <div class="nav-links-row">
+            <div class="nav-links-row">            
                 <a href="#" class="nav-link active">
                     <i class="fas fa-calendar-alt"></i>
                     <span>Schedule</span>
                 </a>
-                <a href="#" class="nav-link">
+                <a href="behavior.html" class="nav-link">
                     <i class="fas fa-chart-line"></i>
                     <span>Behavior</span>
                 </a>
-                <a href="#" class="nav-link">
+                <a href="attendance system.html" class="nav-link">
                     <i class="fas fa-clipboard-check"></i>
                     <span>Attendance</span>
                 </a>
@@ -702,7 +817,7 @@
         let isNavVisible = true;
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => { 
             setupEventListeners();
         });
 
@@ -722,14 +837,6 @@
             });
 
             // Nav link clicks
-            navLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    link.classList.add('active');
-                    showNotification(`Switched to ${link.querySelector('span').textContent}`, 'info');
-                });
-            });
 
             // Window scroll for nav hide/show
             window.addEventListener('scroll', () => {
@@ -749,8 +856,7 @@
                 lastScrollTop = scrollTop;
             });
 
-            // User profile click
-            document.querySelector('.user-profile').addEventListener('click', toggleSettings);
+            // User profile click            
         }
 
         function showNotification(message, type = 'info') {
@@ -771,8 +877,16 @@
             }, 2000);
         }
 
+        function logout() {
+            localStorage.setItem("isLogined", false);
+            localStorage.setItem("loginedAs", null);
+            window.location.href = "index.html";
+        }
+
         function toggleSettings() {
-            showNotification('Settings menu would open here', 'info');
+            const dropdown = document.getElementById('settingsDropdown');
+            dropdown.style.background = "#24482ba0";
+            dropdown.classList.toggle('active');
         }
 
         // Auto-hide nav on scroll
