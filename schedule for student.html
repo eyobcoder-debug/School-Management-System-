@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Timetable</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url("backgrounds/student oversite.png");
+            background-size: 100vw 100vh;
+            background-attachment: fixed;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            width: 100vw;
+        }
+
+        /* Main Container */
+        .dashboard-container {
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Blur Navigation - Simple */
+        .nav-blur {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: none;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-blur.hidden {
+            transform: translateY(-100%);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-brand i {
+            font-size: 1.5rem;
+            color: #ffffff;
+        }
+
+        .nav-brand h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            padding: 120px 20px 50px;
+            min-height: 100vh;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            color: #ffffff;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Timetable Container */
+        .timetable-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Timetable Header */
+        .timetable-header {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-cell {
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #ffffff;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-cell:last-child {
+            border-right: none;
+        }
+
+        .time-header {
+            background: rgba(139, 92, 246, 0.2);
+        }
+
+        /* Timetable Body */
+        .timetable-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .timetable-row {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .timetable-row:last-child {
+            border-bottom: none;
+        }
+
+        /* Time Cell */
+        .time-cell {
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .period-number {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Subject Cell - SIMPLIFIED */
+        .subject-cell {
+            padding: 15px 10px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            min-height: 60px;
+        }
+
+        .subject-cell:last-child {
+            border-right: none;
+        }
+
+        .subject-cell:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .subject-cell.empty {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .subject-cell.break {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .subject-cell.lunch {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .subject-cell.current {
+            background: rgba(16, 185, 129, 0.15);
+            border: 2px solid #10b981;
+        }
+
+        /* Add Button */
+        .add-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .add-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(139, 92, 246, 0.6);
+        }
+
+        /* Settings Dropdown */
+        .settings-dropdown {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            padding: 10px 0;
+            z-index: 1001;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-dropdown.active {
+            display: block;
+        }
+
+        .settings-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            border-radius: 0;
+            transition: all 0.3s ease;
+        }
+
+        .settings-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-option i {
+            color: #8b5cf6;
+            width: 20px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 100px 10px 30px;
+            }
+
+            .page-title {
+                font-size: 1.6rem;
+            }
+
+            .timetable-header {
+                grid-template-columns: 60px repeat(5, 1fr);
+            }
+
+            .timetable-row {
+                grid-template-columns: 60px repeat(5, 1fr);
+            }
+
+            .time-cell {
+                padding: 12px 8px;
+                font-size: 1rem;
+            }
+
+            .header-cell {
+                padding: 12px 8px;
+                font-size: 0.9rem;
+            }
+
+            .subject-cell {
+                padding: 12px 8px;
+                font-size: 0.85rem;
+                min-height: 50px;
+            }
+
+            .add-button {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-brand h1 {
+                font-size: 1.2rem;
+            }
+
+            .page-title {
+                font-size: 1.4rem;
+            }
+
+            .subject-cell {
+                font-size: 0.8rem;
+                padding: 10px 5px;
+            }
+
+            .period-number {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Simple Blur Navigation -->
+        <nav class="nav-blur" id="mainNav">
+            <div class="nav-brand">
+                <i class="fas fa-user-graduate"></i>
+                <h1>Student Timetable</h1>
+            </div>
+            <div class="user-profile" onclick="toggleSettings()">
+                <div class="user-avatar">ES</div>
+                <i class="fas fa-cog"></i>
+                
+                <!-- Settings Dropdown -->
+                <div class="settings-dropdown" id="settingsDropdown">
+                    <a href="#" class="settings-option" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Weekly Timetable</h1>
+            </div>
+
+            <!-- Timetable Grid -->
+            <div class="timetable-container">
+                <!-- Timetable Header -->
+                <div class="timetable-header">
+                    <div class="header-cell time-header">Period</div>
+                    <div class="header-cell">Mon</div>
+                    <div class="header-cell">Tue</div>
+                    <div class="header-cell">Wed</div>
+                    <div class="header-cell">Thu</div>
+                    <div class="header-cell">Fri</div>
+                </div>
+
+                <!-- Timetable Body -->
+                <div class="timetable-body">
+                    <!-- Row 1: Period 1 -->
+                    <div class="timetable-row">
+                        <div class="time-cell">
+                            <div class="period-number">1</div>
+                        </div>
+                        <div class="subject-cell">Physics</div>
+                        <div class="subject-cell">Math</div>
+                        <div class="subject-cell">CS</div>
+                        <div class="subject-cell">English</div>
+                        <div class="subject-cell">Biology</div>
+                    </div>
+
+                    <!-- Row 2: Period 2 -->
+                    <div class="timetable-row">
+                        <div class="time-cell">
+                            <div class="period-number">2</div>
+                        </div>
+                        <div class="subject-cell">Chemistry</div>
+                        <div class="subject-cell">History</div>
+                        <div class="subject-cell">Physics</div>
+                        <div class="subject-cell">Math</div>
+                        <div class="subject-cell">History</div>
+                    </div>
+
+                    <!-- Row 3: Period 3 -->
+                    <div class="timetable-row">
+                        <div class="time-cell">
+                            <div class="period-number">3</div>
+                        </div>
+                        <div class="subject-cell current">Math</div>
+                        <div class="subject-cell">Biology</div>
+                        <div class="subject-cell">Art</div>
+                        <div class="subject-cell">Geography</div>
+                        <div class="subject-cell">CS</div>
+                    </div>
+
+                    <!-- Row 4: Break -->
+                    <div class="timetable-row">
+                        <div class="time-cell">
+                            <div class="period-number">B</div>
+                        </div>
+                        <div class="subject-cell break">Break</div>
+                        <div class="subject-cell break">Break</div>
+                        <div class="subject-cell break">Break</div>
+                        <div class="subject-cell break">Break</div>
+                        <div class="subject-cell break">Break</div>
+                    </div>
+
+                    <!-- Row 5: Period 4 -->
+                    <div class="timetable-row">
+                        <div class="time-cell">
+                            <div class="period-number">4</div>
+                        </div>
+                        <div class="subject-cell">English</div>
+                        <div class="subject-cell">Physics</div>
+                        <div class="subject-cell">Chemistry</div>
+                        <div class="subject-cell">CS</div>
+                        <div class="subject-cell">Math</div>
+                    </div>
+
+                    <!-- Row 6: Period 5 -->
+                    <div class="timetable-row">
+                        <div class="time-cell">
+                            <div class="period-number">5</div>
+                        </div>
+                        <div class="subject-cell">CS</div>
+                        <div class="subject-cell">PE</div>
+                        <div class="subject-cell">Math</div>
+                        <div class="subject-cell">Music</div>
+                        <div class="subject-cell">Physics</div>
+                    </div>
+
+                    <!-- Row 7: Lunch -->
+                    <div class="timetable-row">
+                        <div class="time-cell">
+                            <div class="period-number">L</div>
+                        </div>
+                        <div class="subject-cell lunch">Lunch</div>
+                        <div class="subject-cell lunch">Lunch</div>
+                        <div class="subject-cell lunch">Lunch</div>
+                        <div class="subject-cell lunch">Lunch</div>
+                        <div class="subject-cell lunch">Lunch</div>
+                    </div>
+
+                    <!-- Row 8: Period 6 -->
+                    <div class="timetable-row">
+                        <div class="time-cell">
+                            <div class="period-number">6</div>
+                        </div>
+                        <div class="subject-cell">History</div>
+                        <div class="subject-cell">Chemistry</div>
+                        <div class="subject-cell">English</div>
+                        <div class="subject-cell">Biology</div>
+                        <div class="subject-cell">Club</div>
+                    </div>
+
+                    <!-- Row 9: Period 7 -->
+                    <div class="timetable-row">
+                        <div class="time-cell">
+                            <div class="period-number">7</div>
+                        </div>
+                        <div class="subject-cell">PE</div>
+                        <div class="subject-cell">Club</div>
+                        <div class="subject-cell">Study</div>
+                        <div class="subject-cell">PE</div>
+                        <div class="subject-cell">Mentor</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Button -->
+        <button class="add-button" onclick="addEvent()">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+
+    <script>
+        // DOM Elements
+        const mainNav = document.getElementById('mainNav');
+        let lastScrollTop = 0;
+        let isNavVisible = true;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Hide/show nav on scroll
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                if (scrollTop > lastScrollTop && scrollTop > 50) {
+                    if (isNavVisible) {
+                        mainNav.classList.add('hidden');
+                        isNavVisible = false;
+                    }
+                } else {
+                    if (!isNavVisible) {
+                        mainNav.classList.remove('hidden');
+                        isNavVisible = true;
+                    }
+                }
+                lastScrollTop = scrollTop;
+            });
+
+            // Click on subject cell to mark as current
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.subject-cell')) {
+                    const cell = e.target.closest('.subject-cell');
+                    if (!cell.classList.contains('break') && !cell.classList.contains('lunch')) {
+                        // Remove current class from all cells
+                        document.querySelectorAll('.subject-cell.current').forEach(c => {
+                            c.classList.remove('current');
+                        });
+                        // Add to clicked cell
+                        cell.classList.add('current');
+                    }
+                }
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === '+' || e.key === 'a') {
+                    addEvent();
+                }
+            });
+        }
+
+        function addEvent() {
+            alert("Add event functionality would open here. In the full application, this would allow adding personal study sessions or events.");
+        }
+
+        function logout() {
+            localStorage.setItem("isLogined", false);
+            localStorage.setItem("loginedAs", null);
+            window.location.href = "index.html";
+        }
+
+        function toggleSettings() {
+            const dropdown = document.getElementById('settingsDropdown');
+            dropdown.style.background = "#24482ba0";
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('settingsDropdown');
+            const userProfile = document.querySelector('.user-profile');
+            
+            if (dropdown && dropdown.classList.contains('active') && 
+                !dropdown.contains(e.target) && !userProfile.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
