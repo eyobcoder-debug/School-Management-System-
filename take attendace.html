@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - Take Attendance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url("https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80");
+            background-size: 100vw 100vh;
+            background-attachment: fixed;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            width: 100vw;
+        }
+
+        /* Main Container */
+        .dashboard-container {
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Blur Navigation - GRID LAYOUT */
+        .nav-blur {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: none;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .nav-blur.hidden {
+            transform: translateY(-100%);
+        }
+
+        /* Mobile Layout (default) */
+        .nav-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            grid-row: 1;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-brand i {
+            font-size: 1.5rem;
+            color: #ffffff;
+        }
+
+        .nav-brand h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .user-name {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* Middle Row - Links */
+        .nav-links-row {
+            grid-row: 2;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 5px;
+            overflow: auto;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 8px 5px;
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: #ffffff;
+        }
+
+        .nav-link.active {
+            color: #3b82f6;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #3b82f6;
+            border-radius: 1px;
+        }
+
+        /* Bottom Row - Search and Filters */
+        .nav-actions-row {
+            grid-row: 3;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.85rem;
+            min-width: 120px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .filter-select:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        /* Desktop Layout */
+        @media (min-width: 769px) {
+            .nav-blur {
+                grid-template-columns: auto 1fr auto;
+                grid-template-rows: auto auto;
+                gap: 15px;
+                padding: 20px 30px;
+            }
+
+            /* Top Row Desktop */
+            .nav-top-row {
+                grid-column: 1;
+                grid-row: 1;
+                justify-content: flex-start;
+            }
+
+            .nav-brand {
+                gap: 15px;
+            }
+
+            .nav-brand i {
+                font-size: 2rem;
+            }
+
+            .nav-brand h1 {
+                font-size: 1.8rem;
+            }
+
+            /* Links Row Desktop */
+            .nav-links-row {
+                grid-column: 2;
+                grid-row: 1;
+                justify-content: center;
+                gap: 25px;
+            }
+
+            .nav-link {
+                font-size: 1rem;
+                padding: 10px 0;
+                gap: 8px;
+            }
+
+            /* User Profile Desktop */
+            .user-profile {
+                grid-column: 3;
+                grid-row: 1;
+                justify-content: flex-end;
+                gap: 10px;
+            }
+
+            .user-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            .user-name {
+                font-size: 1rem;
+            }
+
+            /* Actions Row Desktop */
+            .nav-actions-row {
+                grid-column: 1 / span 3;
+                grid-row: 2;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .filter-select {
+                min-width: 140px;
+                flex: none;
+            }
+        }
+
+        /* Main Content Area */
+        .main-content {
+            padding: 180px 20px 150px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Attendance Header */
+        .attendance-header {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .attendance-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .attendance-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .session-info {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .info-item i {
+            color: #3b82f6;
+            font-size: 1rem;
+        }
+
+        /* Progress Section */
+        .progress-section {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .progress-text {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .progress-percent {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #3b82f6;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Student Card */
+        .student-card-container {
+            width: 100%;
+            max-width: 500px;
+            min-height: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .student-card {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: all 0.4s ease;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .student-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .student-name-large {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .student-details-large {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 40px;
+        }
+
+        .student-detail {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .student-detail i {
+            color: #3b82f6;
+            margin-right: 10px;
+        }
+
+        /* Attendance Status */
+        .attendance-status {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            padding: 12px 30px;
+            border-radius: 50px;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .status-present {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .status-absent {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 20px;
+            border-radius: 15px;
+            border: none;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-present {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+
+        .btn-present:hover {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-absent {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .btn-absent:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        .action-btn i {
+            font-size: 2rem;
+        }
+
+        /* Done Button */
+        .done-button {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+            margin-top: 30px;
+        }
+
+        .done-button.show {
+            display: flex;
+        }
+
+        .done-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(139, 92, 246, 0.6);
+        }
+
+        /* Settings Dropdown */
+        .settings-dropdown {
+            display: none;
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 10px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            padding: 10px 0;
+            z-index: 1001;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-dropdown.active {
+            display: block;
+        }
+
+        .settings-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            border-radius: 0;
+            transition: all 0.3s ease;
+        }
+
+        .settings-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-option i {
+            color: #3b82f6;
+            width: 20px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .settings-dropdown {
+                top: 35%;
+            }
+
+            .main-content {
+                padding: 200px 15px 150px;
+            }
+
+            .attendance-header {
+                padding: 20px;
+            }
+
+            .attendance-title {
+                font-size: 1.8rem;
+            }
+
+            .nav-blur {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+                grid-template-areas:
+                   "brand user"
+                   "links links"
+                   "actions actions";
+               grid-template-columns: 1fr auto;
+            }
+
+            .session-info {
+                gap: 10px;
+            }
+
+            .info-item {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+
+            .student-card {
+                padding: 30px;
+            }
+
+            .student-avatar-large {
+                width: 100px;
+                height: 100px;
+                font-size: 2rem;
+            }
+
+            .student-name-large {
+                font-size: 1.6rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .action-btn {
+                padding: 18px;
+                flex-direction: row;
+                justify-content: center;
+            }
+
+            .action-btn i {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links-row {
+                gap: 3px;
+            }
+
+            .nav-link span {
+                font-size: 0.8rem;
+            }
+
+            .student-card {
+                padding: 25px;
+            }
+
+            .student-avatar-large {
+                width: 80px;
+                height: 80px;
+                font-size: 1.8rem;
+            }
+
+            .student-name-large {
+                font-size: 1.4rem;
+            }
+
+            .attendance-status {
+                font-size: 1.1rem;
+                padding: 10px 20px;
+            }
+
+            .action-btn {
+                padding: 16px;
+                font-size: 1rem;
+            }
+
+            .done-button {
+                padding: 18px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Grid Areas */
+        .nav-brand { grid-area: brand; }
+        .nav-links-row { grid-area: links; }
+        .nav-actions-row { grid-area: actions; }
+        .user-profile { grid-area: user; }
+
+        @media (min-width: 769px) {
+            .nav-blur {
+                display: grid;
+                grid-template-areas:
+                    "brand links user"
+                    "actions actions actions";
+                grid-template-columns: auto 1fr auto;
+                row-gap: 20px;
+            }
+
+            .nav-links {
+                justify-content: center;
+            }
+
+            .nav-actions {
+                justify-content: center;
+            }
+
+            .filters {
+                display: flex;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Blur Navigation with GRID Layout -->
+        <nav class="nav-blur" id="mainNav">
+            <!-- Top Row: Brand + User Profile -->
+            <div class="nav-top-row">
+                <div class="nav-brand">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <h1>Teacher Dashboard</h1>
+                </div>
+                <div class="user-profile" onclick="toggleSettings()">
+                    <div class="user-avatar">TM</div>
+                    <div class="user-name">Ms. Rodriguez</div>
+                    <i class="fas fa-cog"></i>
+                    
+                    <!-- Settings Dropdown -->
+                    <div class="settings-dropdown" id="settingsDropdown">
+                        <a href="#" class="settings-option">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Profile Settings</span>
+                        </a>
+                        <a href="#" class="settings-option">
+                            <i class="fas fa-bell"></i>
+                            <span>Notifications</span>
+                        </a>
+                        <a href="#" class="settings-option">
+                            <i class="fas fa-lock"></i>
+                            <span>Privacy & Security</span>
+                        </a>
+                        <a href="#" class="settings-option" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Row: Navigation Links -->
+            <div class="nav-links-row">
+                <a href="teacher-schedule.html" class="nav-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Schedule</span>
+                </a>
+                <a href="teacher-behavior.html" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Behavior</span>
+                </a>
+                <a href="#" class="nav-link active">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Attendance</span>
+                </a>
+                <a href="teacher-homework.html" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>Homework</span>
+                </a>
+                <a href="teacher-communication.html" class="nav-link">
+                    <i class="fas fa-comments"></i>
+                    <span>Parent Comm</span>
+                </a>
+            </div>
+
+            <!-- Bottom Row: Search and Filters -->
+            <div class="nav-actions-row">
+                <select class="filter-select" id="classFilter">
+                    <option value="10A">Grade 10-A</option>
+                    <option value="10B">Grade 10-B</option>
+                </select>
+                <select class="filter-select" id="subjectFilter">
+                    <option value="math">Mathematics</option>
+                    <option value="science">Science</option>
+                </select>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Attendance Header -->
+            <div class="attendance-header">
+                <h1 class="attendance-title">Take Attendance</h1>
+                <p class="attendance-subtitle">Mark students as Present or Absent for today's class</p>
+                
+                <div class="session-info">
+                    <div class="info-item">
+                        <i class="fas fa-users"></i>
+                        <span>Grade 10-A</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-book"></i>
+                        <span>Mathematics</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-calendar-day"></i>
+                        <span id="currentDate">October 26, 2023</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Period 2 (10:00 AM)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Section -->
+            <div class="progress-section">
+                <div class="progress-header">
+                    <div class="progress-text" id="progressText">Student 1 of 12</div>
+                    <div class="progress-percent" id="progressPercent">0%</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <!-- Single Student Card Container -->
+            <div class="student-card-container" id="studentCardContainer">
+                <!-- Single card will be rendered here -->
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons" id="actionButtons">
+                <!-- Will be rendered with student card -->
+            </div>
+
+            <!-- Done Button -->
+            <button class="done-button" id="doneBtn" onclick="finishAttendance()">
+                <i class="fas fa-check-double"></i>
+                Finish Attendance
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Sample student data
+        const students = [
+            { id: 1, name: "John Smith", roll: "12", initials: "JS", attendance: null },
+            { id: 2, name: "Maria Johnson", roll: "05", initials: "MJ", attendance: null },
+            { id: 3, name: "Robert Williams", roll: "18", initials: "RW", attendance: null },
+            { id: 4, name: "Emily Chen", roll: "07", initials: "EC", attendance: null },
+            { id: 5, name: "David Kim", roll: "15", initials: "DK", attendance: null },
+            { id: 6, name: "Sarah Miller", roll: "09", initials: "SM", attendance: null },
+            { id: 7, name: "James Wilson", roll: "14", initials: "JW", attendance: null },
+            { id: 8, name: "Lisa Thompson", roll: "03", initials: "LT", attendance: null },
+            { id: 9, name: "Michael Brown", roll: "22", initials: "MB", attendance: null },
+            { id: 10, name: "Jennifer Davis", roll: "11", initials: "JD", attendance: null },
+            { id: 11, name: "Christopher Lee", roll: "16", initials: "CL", attendance: null },
+            { id: 12, name: "Amanda Taylor", roll: "08", initials: "AT", attendance: null }
+        ];
+
+        // DOM Elements
+        const mainNav = document.getElementById('mainNav');
+        const studentCardContainer = document.getElementById('studentCardContainer');
+        const actionButtons = document.getElementById('actionButtons');
+        const currentDateElement = document.getElementById('currentDate');
+        const progressText = document.getElementById('progressText');
+        const progressPercent = document.getElementById('progressPercent');
+        const progressFill = document.getElementById('progressFill');
+        const doneBtn = document.getElementById('doneBtn');
+        const classFilter = document.getElementById('classFilter');
+        const subjectFilter = document.getElementById('subjectFilter');
+
+        let currentStudentIndex = 0;
+        let lastScrollTop = 0;
+        let isNavVisible = true;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCurrentDate();
+            renderCurrentStudent();
+            updateProgress();
+            setupEventListeners();
+        });
+
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            currentDateElement.textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        function renderCurrentStudent() {
+            const student = students[currentStudentIndex];
+            
+            // Determine status text and color
+            let statusText = 'Attendance Pending';
+            let statusClass = 'status-pending';
+            
+            if (student.attendance === 'present') {
+                statusText = 'Present';
+                statusClass = 'status-present';
+            } else if (student.attendance === 'absent') {
+                statusText = 'Absent';
+                statusClass = 'status-absent';
+            }
+            
+            // Render student card
+            studentCardContainer.innerHTML = `
+                <div class="student-card">
+                    <div class="student-avatar-large">${student.initials}</div>
+                    <h2 class="student-name-large">${student.name}</h2>
+                    <div class="student-details-large">
+                        <div class="student-detail">
+                            <i class="fas fa-id-badge"></i>
+                            Roll #${student.roll}
+                        </div>
+                        <div class="student-detail">
+                            <i class="fas fa-graduation-cap"></i>
+                            Grade 10-A
+                        </div>
+                    </div>
+                    <div class="attendance-status ${statusClass}">
+                        ${statusText}
+                    </div>
+                </div>
+            `;
+            
+            // Render action buttons
+            actionButtons.innerHTML = `
+                <button class="action-btn btn-absent" onclick="markAbsent()">
+                    <i class="fas fa-times-circle"></i>
+                    Absent
+                </button>
+                <button class="action-btn btn-present" onclick="markPresent()">
+                    <i class="fas fa-check-circle"></i>
+                    Present
+                </button>
+            `;
+        }
+
+        function updateProgress() {
+            const completed = students.filter(s => s.attendance).length;
+            const total = students.length;
+            const percent = Math.round((completed / total) * 100);
+            
+            progressText.textContent = `Student ${currentStudentIndex + 1} of ${total}`;
+            progressPercent.textContent = `${percent}%`;
+            progressFill.style.width = `${percent}%`;
+            
+            // Show done button when all students are marked
+            if (completed === total) {
+                doneBtn.classList.add('show');
+                actionButtons.style.display = 'none';
+            } else {
+                doneBtn.classList.remove('show');
+                actionButtons.style.display = 'flex';
+            }
+        }
+
+        function setupEventListeners() {
+            // Hide/show nav on scroll
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                if (scrollTop > lastScrollTop && scrollTop > 50) {
+                    if (isNavVisible) {
+                        mainNav.classList.add('hidden');
+                        isNavVisible = false;
+                    }
+                } else {
+                    if (!isNavVisible) {
+                        mainNav.classList.remove('hidden');
+                        isNavVisible = true;
+                    }
+                }
+                
+                lastScrollTop = scrollTop;
+            });
+
+            // Filter changes
+            classFilter.addEventListener('change', () => {
+                alert('Class filter applied. Loading students for selected class.');
+                currentStudentIndex = 0;
+                renderCurrentStudent();
+                updateProgress();
+            });
+
+            subjectFilter.addEventListener('change', () => {
+                alert('Subject filter applied.');
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === '1' || e.key === 'p') {
+                    markPresent();
+                } else if (e.key === '2' || e.key === 'a') {
+                    markAbsent();
+                } else if (e.key === 'Enter' && doneBtn.classList.contains('show')) {
+                    finishAttendance();
+                }
+            });
+        }
+
+        function markPresent() {
+            students[currentStudentIndex].attendance = 'present';
+            
+            // Auto-move to next student if available
+            if (currentStudentIndex < students.length - 1) {
+                currentStudentIndex++;
+                renderCurrentStudent();
+            } else {
+                // If last student, re-render current one
+                renderCurrentStudent();
+            }
+            
+            updateProgress();
+        }
+
+        function markAbsent() {
+            students[currentStudentIndex].attendance = 'absent';
+            
+            // Auto-move to next student if available
+            if (currentStudentIndex < students.length - 1) {
+                currentStudentIndex++;
+                renderCurrentStudent();
+            } else {
+                // If last student, re-render current one
+                renderCurrentStudent();
+            }
+            
+            updateProgress();
+        }
+
+        function finishAttendance() {
+            // In real app, this would save to database
+            const presentCount = students.filter(s => s.attendance === 'present').length;
+            const absentCount = students.filter(s => s.attendance === 'absent').length;
+            
+            alert(`Attendance completed!\n\nPresent: ${presentCount} students\nAbsent: ${absentCount} students\n\nAttendance has been saved.`);
+            
+            // Redirect to main attendance page
+            window.location.href = "attendance system.html";
+        }
+
+        function logout() {
+            localStorage.setItem("isLogined", false);
+            localStorage.setItem("loginedAs", null);
+            window.location.href = "index.html";
+        }
+
+        function toggleSettings() {
+            const dropdown = document.getElementById('settingsDropdown');
+            dropdown.style.background = "#24482ba0";
+            dropdown.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('settingsDropdown');
+            const userProfile = document.querySelector('.user-profile');
+            
+            if (dropdown && dropdown.classList.contains('active') && 
+                !dropdown.contains(e.target) && !userProfile.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
